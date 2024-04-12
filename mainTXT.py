@@ -1,51 +1,96 @@
+import difflib
 import matplotlib.pyplot as plt
+import docx
 
-def read_text(file_path):
-    """Reads text from a file."""
+# Function to read text from .txt file
+def read_txt_file(file_path):
     with open(file_path, 'r', encoding='utf-8') as file:
         return file.read()
 
-def calculate_accuracy(reference_text, ocr_text):
-    """Calculates character-level accuracy and error rate."""
-    if len(reference_text) != len(ocr_text):
-        raise ValueError("Reference and OCR text must have the same length for comparison.")
+# Function to read text from .docx file
+def read_docx_file(file_path):
+    doc = docx.Document(file_path)
+    text = []
+    for paragraph in doc.paragraphs:
+        text.append(paragraph.text)
+    return "\n".join(text)
 
-    correct_count = sum(1 for ref, ocr in zip(reference_text, ocr_text) if ref == ocr)
-    total_count = len(reference_text)
-    
-    accuracy = correct_count / total_count
-    error_rate = 1 - accuracy
-    
-    return accuracy, error_rate
+# Calculate error rates
+def calculate_error_rates(reference_text, ocr_text):
+    # Calculate similarity between reference text and OCR text
+    similarity = difflib.SequenceMatcher(None, reference_text, ocr_text)
 
-def visualize_results(accuracy, error_rate):
-    """Visualizes accuracy and error rate using a bar chart."""
-    labels = ['Accuracy', 'Error Rate']
-    values = [accuracy, error_rate]
+    # Calculate Word Error Rate (WER)
+    wer = 1 - similarity.ratio()
+
+    # Calculate Character Error Rate (CER)
+    cer = sum([1 for ref, ocr in zip(reference_text, ocr_text) if ref != ocr]) / len(reference_text)
     
-    plt.bar(labels, values, color=['green', 'red'])
-    plt.ylabel('Percentage')
-    plt.title('OCR Performance Metrics')
+    return wer, cer
+
+# Automate comparison
+def automate_comparison(reference_files, ocr_files, file_type='txt'):
+    results = []
+    
+    # Read texts from files based on file type
+    if file_type == 'txt':
+        read_file = read_txt_file
+    elif file_type == 'docx':
+        read_file = read_docx_file
+    
+    for ref_file, ocr_file in zip(reference_files, ocr_files):
+        # Read texts from files
+        reference_text = read_file(ref_file)
+        ocr_text = read_file(ocr_file)
+        
+        # Calculate error rates
+        wer, cer = calculate_error_rates(reference_text, ocr_text)
+        results.append((wer, cer))
+    return results
+
+# Visualize results
+def visualize_results(results, model_names):
+    # Unpack results
+    wer_results, cer_results = zip(*results)
+    
+    # Create a figure
+    plt.figure()
+    
+    # Plot Word Error Rate (WER)
+    plt.bar(model_names, wer_results, alpha=0.6, label='WER')
+    
+    # Plot Character Error Rate (CER)
+    plt.bar(model_names, cer_results, alpha=0.6, label='CER')
+    
+    # Add labels and title
+    plt.xlabel('Model')
+    plt.ylabel('Error Rate')
+    plt.title('Word and Character Error Rates for OCR Models')
+    plt.legend()
+    
+    # Show the plot
     plt.show()
 
+# Main function
 def main():
-    # Specify file paths for reference and OCR text files
-    reference_file_path = 'reference_text.txt'
-    ocr_file_path = 'ocr_text.txt'
-    
-    # Read texts from files
-    reference_text = read_text(reference_file_path)
-    ocr_text = read_text(ocr_file_path)
-    
-    # Calculate accuracy and error rate
-    accuracy, error_rate = calculate_accuracy(reference_text, ocr_text)
-    
-    # Print results
-    print(f"Accuracy: {accuracy * 100:.2f}%")
-    print(f"Error Rate: {error_rate * 100:.2f}%")
-    
-    # Visualize results
-    visualize_results(accuracy, error_rate)
+    # Define file paths for reference texts and OCR outputs for each model
+    reference_files = ['reference_text_1.txt', 'reference_text_2.docx', ...]
+    ocr_files_bhashini = ['ocr_text_bhashini_1.txt', 'ocr_text_bhashini_2.docx', ...]
+    ocr_files_iiith = ['ocr_text_iiith_1.txt', 'ocr_text_iiith_2.docx', ...]
+    ocr_files_tesseract = ['ocr_text_tesseract_1.txt', 'ocr_text_tesseract_2.docx', ...]
 
-if __name__ == '__main__':
-    main()
+    # Define model names for visualization
+    model_names = ['Bhashini OCR', 'IIITH OCR', 'Tesseract OCR']
+    
+    # Calculate error rates for each model
+    results_bhashini = automate_comparison(reference_files, ocr_files_bhashini, file_type='txt')
+    results_iiith = automate_comparison(reference_files, ocr_files_iiith, file_type='docx')
+    results_tesseract = automate_comparison(reference_files, ocr_files_tesseract, file_type='txt')
+    
+    # Combine results for visualization
+    all_results = [results_bhashini, results_iiith, results_tesseract]
+    
+    # Visualize the results
+    visualize_results(all_results, model_names)
+
+if you have any additional questions or concerns, please let me know.
