@@ -44,17 +44,25 @@ def visualize_results(results, model_names):
     # Create a figure
     plt.figure()
     
+    bar_width= 0.35
+    x= range(len(model_names))
+    
+    plt.bar(x, wer_results, width=bar_width, alpha=0.6, label='WER', color='b')
+    plt.bar([i + bar_width for i in x], cer_results, width=bar_width, alpha=0.6, label='CER', color='r')
+    
     # Plot Word Error Rate (WER)
-    plt.bar(model_names, wer_results, alpha=0.6, label='WER')
+    #plt.bar(model_names, wer_results, alpha=0.6, label='WER')
     
     # Plot Character Error Rate (CER)
-    plt.bar(model_names, cer_results, alpha=0.6, label='CER')
+    #plt.bar(model_names, cer_results, alpha=0.6, label='CER')
     
     # Add labels and title
     plt.xlabel('Model')
     plt.ylabel('Error Rate')
-    plt.title('Word and Character Error Rates for OCR Models')
+    plt.title('OCR Models for Source Language Hindi')
     plt.legend()
+    
+    plt.xticks([i + bar_width / 2 for i in x], model_names)
     
     # Show the plot
     plt.show()
@@ -63,9 +71,9 @@ def visualize_results(results, model_names):
 def main():
     # Define file paths for reference texts and OCR outputs for each model
     reference_files = [r"C:\Users\shrutigupta15\Desktop\TestFilesOCR\ReferenceText.txt"]
-    ocr_files_bhashini = [r"C:\Users\shrutigupta15\Desktop\TestFilesOCR\Bhashini_OCR_English.txt"]
-    ocr_files_iiith = [r"C:\Users\shrutigupta15\Desktop\TestFilesOCR\IIITH_OCR_English.txt"]
-    ocr_files_tesseract = [r"C:\Users\shrutigupta15\Desktop\TestFilesOCR\Tesseract_OCR_English.txt"]
+    ocr_files_bhashini = [r"C:\Users\shrutigupta15\Desktop\TestFilesOCR\Bhashini_OCR_Hindi.txt"]
+    ocr_files_iiith = [r"C:\Users\shrutigupta15\Desktop\TestFilesOCR\IIITH_OCR_Hindi.txt"]
+    ocr_files_tesseract = [r"C:\Users\shrutigupta15\Desktop\TestFilesOCR\Tesseract_OCR_Hindi.txt"]
     
     # Define model names for visualization
     model_names = ['Bhashini OCR', 'IIITH OCR', 'Tesseract OCR']
