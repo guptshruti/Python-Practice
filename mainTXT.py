@@ -37,35 +37,27 @@ def automate_comparison(reference_files, ocr_files):
 
 # Visualize results
 def visualize_results(results, model_names):
-    """Visualize error rates for different OCR models."""
-    # Unpack results
-    wer_results, cer_results = zip(*results)
+    """Visualize Word Error Rate (WER) for different OCR models."""
+    # Unpack WER results from the results list
+    wer_results = [result[0] for result in results]
     
-    # Create a figure
-    plt.figure()
+    # Create a figure and set its size
+    plt.figure(figsize=(8, 6))
     
-    bar_width= 0.35
-    x= range(len(model_names))
-    
-    plt.bar(x, wer_results, width=bar_width, alpha=0.6, label='WER', color='b')
-    plt.bar([i + bar_width for i in x], cer_results, width=bar_width, alpha=0.6, label='CER', color='r')
-    
-    # Plot Word Error Rate (WER)
-    #plt.bar(model_names, wer_results, alpha=0.6, label='WER')
-    
-    # Plot Character Error Rate (CER)
-    #plt.bar(model_names, cer_results, alpha=0.6, label='CER')
+    # Plot WER results as a bar chart
+    plt.bar(model_names, wer_results, alpha=0.8, color='blue', width=0.4)  # Reduce bar width to decrease spacing
     
     # Add labels and title
     plt.xlabel('Model')
-    plt.ylabel('Error Rate')
-    plt.title('OCR Models for Source Language Hindi')
-    plt.legend()
+    plt.ylabel('Word Error Rate (WER)')
+    plt.title('Word Error Rate for OCR Models')
     
-    plt.xticks([i + bar_width / 2 for i in x], model_names)
-    
-    # Show the plot
+    # Reduce the x-axis range to minimize unnecessary space
+    plt.tight_layout()  # Automatically adjust subplot parameters to fit the plot within the figure
+
+    # Display the plot
     plt.show()
+
 
 # Main function
 def main():
